@@ -27,9 +27,5 @@ namespace Grav.Guns {
 
 			InitializeAmmo();
 		}
-
-		public override void LeftMouseButton () {
-			FireGun(ItemParent.Direction);
-		}
 	}
 }

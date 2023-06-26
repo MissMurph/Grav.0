@@ -26,10 +26,6 @@ namespace Grav.Guns {
 			InitializeAmmo();
 		}
 
-		public override void LeftMouseButton () {
-			FireGun(ItemParent.Direction);
-		}
-
 		protected override void FireGun (Vector2 direction) {
 			if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
 			if (isReloading || cooldownTick > 0) return;

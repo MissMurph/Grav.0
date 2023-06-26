@@ -45,14 +45,14 @@ namespace Grav {
 			_layerMasks = new LayerMask[1];
 			_layerMasks[0] = LayerMask.GetMask("Collideable");
 
-			UI_ActiveGun = GameObject.Find("AmmoCounter").GetComponent<ActiveGunUI>();
-			UI_BuffController = GameObject.Find("BuffSection").GetComponent<BuffControllerUI>();
+			//UI_ActiveGun = GameObject.Find("AmmoCounter").GetComponent<ActiveGunUI>();
+			//UI_BuffController = GameObject.Find("BuffSection").GetComponent<BuffControllerUI>();
 
 			InitializeGame();
 		}
 
 		private void Update () {
-			UI_ActiveGun.ReloadingText.transform.position = Input.mousePosition;
+			//UI_ActiveGun.ReloadingText.transform.position = Input.mousePosition;
 
 			if (timeTilNextTick <= 0) {
 				foreach (Entity e in activeEntities) {
@@ -66,11 +66,11 @@ namespace Grav {
 		}
 
 		private void InitializeGame () {
-			foreach (GameObject g in objectsToInitialize) {
+			/*foreach (GameObject g in objectsToInitialize) {
 				g.SetActive(true);
 
 				if (g.TryGetComponent<Entity>(out Entity e)) activeEntities.Add(e);
-			}
+			}*/
 
 
 		}

@@ -31,8 +31,8 @@ namespace Grav.Entities {
 
 		protected Rigidbody rigidBody;
 
-		public Vector2 Direction { get { return _direction; } }
-		protected Vector2 _direction;
+		//public Vector2 Direction { get { return _direction; } }
+		//protected Vector2 _direction;
 
 		public Vector2 Velocity { get { return _velocity; } }
 		protected Vector2 _velocity;
