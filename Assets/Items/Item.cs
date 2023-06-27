@@ -37,7 +37,7 @@ namespace Grav.Items {
 		}
 
 		private void OnShoot (Gun gun) {
-			if (GameManager.RandomGenerator.Next(0, 100) <= 20) gun._currentAmmo += gun.AmmoConsumption;
+			//if (GameManager.RandomGenerator.Next(0, 100) <= 20) gun._currentAmmo += gun.AmmoConsumption;
 		}
 	}
 

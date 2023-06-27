@@ -2,30 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Grav;
+using UnityEngine.InputSystem;
 
 namespace Grav.Guns {
 
 	public class AssaultRifle : Gun {
+		public override void Reload (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
+		}
 
-		protected virtual void Awake () {
-			ItemName = "Assault Rifle";
+		public override void Trigger (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
+		}
 
-			baseDamage = 10;
-			baseFireRate = 7f;
-			baseRecoil = 1f;
-			baseAccuracy = 0.98f;
-			baseMagSize = 30;
-			baseReloadTime = 3.5f;
-
-			parts.Add(new Action(BaseStats.Rarities.Legendary, this));
-			parts.Add(new Barrel(BaseStats.Rarities.Legendary, this));
-			parts.Add(new Stock(BaseStats.Rarities.Legendary, this));
-			parts.Add(new Magazine(BaseStats.Rarities.Legendary, this));
-			parts.Add(new Trigger(BaseStats.Rarities.Legendary, this));
-
-			fireDelay = 1f / FireRate;
-
-			InitializeAmmo();
+		public override void Zoom (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
 		}
 	}
 }

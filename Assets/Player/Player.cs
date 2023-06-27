@@ -25,21 +25,21 @@ namespace Grav.Players {
 		//public Del handler;
 
 		public Gun[] guns;
-		public Gun currentGun;
+		public Gun equipped;
 
-		private Vector2 direction;
+		//public static Vector2 Direction { get { return Instance.direction; } }
+
+		private Vector2 moveDirection;
 		private Vector2 mousePos;
 
 		//private List<IGunModifier> gunModifiers = new List<IGunModifier>();
 
 		protected override void Awake () {
 			base.Awake();
-			if (Instance != null) Destroy(this.gameObject);
+			if (Instance != null) Destroy(gameObject);
 			else Instance = this;
 
 			guns = new Gun[4];
-
-			BaseMoveSpeed = 5f;
 
 			//guns[0] = gameObject.AddComponent<FlameThrower>();
 			//guns[1] = gameObject.AddComponent<RocketLauncher>();
@@ -72,20 +72,21 @@ namespace Grav.Players {
 		protected override void Update () {
 			base.Update();
 
-			float x = braking ? rigidBody.velocity.x * -1 * 0.9f : direction.x;
-			float y = braking ? rigidBody.velocity.z * -1 * 0.9f : direction.y;
+			float x = braking ? rigidBody.velocity.x * -1 * 0.9f : moveDirection.x;
+			float y = braking ? rigidBody.velocity.z * -1 * 0.9f : moveDirection.y;
 
 			rigidBody.AddForce(new Vector3(x * MoveSpeed, 0, y * MoveSpeed));
 
 			Vector3 worldPos = view.ScreenToWorldPoint(mousePos);
-			Vector2 mouseDir = new Vector3(worldPos.x, 0, worldPos.z) - transform.position;
-			_angle = (Mathf.Atan2(mouseDir.y, mouseDir.x)) * Mathf.Rad2Deg;
+			Vector3 mouseDir = new Vector3(worldPos.x, 0, worldPos.z) - transform.position;
+			_direction = mouseDir;
+			_angle = (Mathf.Atan2(mouseDir.z, mouseDir.x)) * Mathf.Rad2Deg;
 
-			transform.eulerAngles = new Vector3(0, 0, _angle);
+			transform.eulerAngles = new Vector3(0, _angle, 0);
 		}
 
 		public void Move (InputAction.CallbackContext context) {
-			direction = context.ReadValue<Vector2>();
+			moveDirection = context.ReadValue<Vector2>();
 		}
 
 		public void Look (InputAction.CallbackContext context) {
@@ -93,11 +94,11 @@ namespace Grav.Players {
 		}
 
 		public void Fire (InputAction.CallbackContext context) {
-
+			if (equipped != null) equipped.Trigger(context);
 		}
 
 		public void Zoom (InputAction.CallbackContext context) {
-
+			equipped.Zoom(context);
 		}
 
 		public void Interact (InputAction.CallbackContext context) {
@@ -105,7 +106,7 @@ namespace Grav.Players {
 		}
 
 		public void Reload (InputAction.CallbackContext context) {
-
+			equipped.Reload(context);
 		}
 
 		public void Brake (InputAction.CallbackContext context) {

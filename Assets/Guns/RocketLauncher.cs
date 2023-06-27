@@ -1,33 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Grav.Guns {
 
 	public class RocketLauncher : Gun {
-
-		protected virtual void Awake () {
-			ItemName = "Rocket Launcher";
-
-			baseDamage = 50;
-			baseFireRate = 1f;
-			baseRecoil = 1f;
-			baseAccuracy = 0.95f;
-			baseMagSize = 1;
-			baseReloadTime = 5f;
-
-			parts.Add(new Action(0, this));
-			parts.Add(new Barrel(0, this));
-			parts.Add(new Magazine(0, this));
-			parts.Add(new Trigger(0, this));
-
-			fireDelay = 1f / FireRate;
-
-			InitializeAmmo();
-		}
-
-		protected override void FireGun (Vector2 direction) {
-			if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
+		public override void Trigger (InputAction.CallbackContext context) {
+			/*if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
 			if (isReloading || cooldownTick > 0) return;
 
 			ItemParent.AddForce(-direction, Recoil * Damage);
@@ -46,13 +26,21 @@ namespace Grav.Guns {
 
 			OnShoot(this);
 			GameManager.UpdateText(GameManager.UI_ActiveGun.CurrentAmmoCounter, CurrentAmmo.ToString());
-			cooldownTick = fireDelay;
+			cooldownTick = fireDelay;*/
 		}
 
-		public virtual new Rocket FireProjectile (Vector2 direction, float angle, int damage, float speed, Vector2 position, params GameObject[] ignoreCollision) {
+		public override void Zoom (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
+		}
+
+		public override void Reload (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
+		}
+
+		/*public virtual new Rocket FireProjectile (Vector2 direction, float angle, int damage, float speed, Vector2 position, params GameObject[] ignoreCollision) {
 			Rocket b = Instantiate(GameManager.Resources.getPrefab("rocket"), position, Quaternion.Euler(0, 0, angle)).GetComponent<Rocket>();
 			b.Initialize(damage, this, direction, speed, ignoreCollision);
 			return b;
-		}
+		}*/
 	}
 }

@@ -2,39 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Grav;
+using UnityEngine.InputSystem;
 
 namespace Grav.Guns {
 
 	public class ShotGun : Gun {
+
 		protected int shotCount;
 
-		//public override int Damage { get { return (baseDamage + modDamage) * shotCount; } }
-
-		protected virtual void Awake () {
-			ItemName = "Shotgun";
-
-			baseDamage = 5;
-			baseFireRate = 5f;
-			baseRecoil = 1f;
-			baseAccuracy = 0.95f;
-			baseMagSize = 5;
-			baseReloadTime = 4f;
-
-			shotCount = 7;
-
-			parts.Add(new Action(0, this));
-			parts.Add(new Barrel(0, this));
-			parts.Add(new Stock(0, this));
-			parts.Add(new Magazine(0, this));
-			parts.Add(new Trigger(0, this));
-
-			fireDelay = 1f / FireRate;
-
-			InitializeAmmo();
-		}
-
-		protected override void FireGun (Vector2 direction) {
-			if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
+		public override void Trigger (InputAction.CallbackContext context) {
+			/*if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
 			if (!isReloading && cooldownTick > 0) return;
 
 			ItemParent.AddForce(-direction, Recoil * Damage * 2);
@@ -54,21 +31,15 @@ namespace Grav.Guns {
 
 			_currentAmmo -= AmmoConsumption;
 			GameManager.UpdateText(GameManager.UI_ActiveGun.CurrentAmmoCounter, CurrentAmmo.ToString());
-			cooldownTick = fireDelay;
+			cooldownTick = fireDelay;*/
 		}
-	}
 
-	public class DoubleBarrelShotgun : ShotGun {
+		public override void Zoom (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
+		}
 
-		protected override void Awake () {
-			base.Awake();
-
-			ItemName = "Double Barrel Shotgun";
-
-			baseMagSize = 2;
-			modMagSize = 0;
-
-			InitializeAmmo();
+		public override void Reload (InputAction.CallbackContext context) {
+			throw new System.NotImplementedException();
 		}
 	}
 }
