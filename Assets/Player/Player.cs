@@ -39,7 +39,7 @@ namespace Grav.Players {
 			if (Instance != null) Destroy(gameObject);
 			else Instance = this;
 
-			guns = new Gun[4];
+			//guns = new Gun[4];
 
 			//guns[0] = gameObject.AddComponent<FlameThrower>();
 			//guns[1] = gameObject.AddComponent<RocketLauncher>();
@@ -115,7 +115,13 @@ namespace Grav.Players {
 		}
 
 		public void Switch (InputAction.CallbackContext context) {
-			Debug.Log(context.ReadValue<int>());
+			if (context.performed) {
+				int index = context.ReadValue<int>();
+
+				if (guns[index] != null) {
+					equipped = guns[index];
+				}
+			}
 		}
 	}
 }

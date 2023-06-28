@@ -4,66 +4,92 @@ using UnityEngine;
 using Grav;
 using Grav.Entities;
 using UnityEngine.InputSystem;
+using System;
+using Grav.Players;
 
 namespace Grav.Guns {
 
 	public class FlameThrower : Gun {
-		[SerializeField]
-		public int SplitCount { get; private set; }     //How many projectiles will be created on hit
 
 		[SerializeField]
-		protected int spreadChain;      //How many times will projectiles split
+		public int SplitCount;   //How many projectiles will be created on hit
+
+		[SerializeField]
+		protected int ChainLength;      //How many times will projectiles split
+
+		private Dictionary<Projectile, int> activeChains;
+
+		protected override void Awake () {
+			base.Awake();
+
+			activeChains = new Dictionary<Projectile, int>();
+		}
 
 		public override void Trigger (InputAction.CallbackContext context) {
-			/*if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
-			if (!isReloading && cooldownTick > 0) return;
+			if (context.performed) {
+				if (Chambered) {
+					Projectile chainStart = FireProjectile(Player.Instance.Direction, 5f, OnHit, Player.Instance.gameObject);
+					activeChains.Add(chainStart, ChainLength);
+					cooldownTimer -= fireDelay;
+				}
+				else if (CurrentAmmo <= 0) {
+					Reload(context);
+				}
+			}
+		}
 
-			ItemParent.AddForce(-direction, Recoil * Damage);
+		public override void Zoom (InputAction.CallbackContext context) {
+			
+		}
+
+		public override void Reload (InputAction.CallbackContext context) {
+			if (context.performed) {
+				Reload();
+			}
+		}
+
+		protected virtual void OnHit (HitInfo result) {
+			if (result.Result) {
+				if (activeChains.TryGetValue(result.Bullet, out int chainLength)) {
+					Projectile[] newBullets = FireSpread(result.Target.transform.position, result.Bullet.Direction, 5f, SplitCount, OnHit, result.Target.gameObject);
+
+					//Only if there's more chains remaining are we adding it to activeChains. If there's no more remaining there's no need to track
+					if (chainLength - 1 > 0) {
+						foreach (Projectile bullet in newBullets) {
+							activeChains.Add(bullet, chainLength - 1);
+						}
+					}
+
+					activeChains.Remove(result.Bullet);
+				}
+
+			}
+		}
+
+		protected virtual Projectile[] FireSpread (Vector3 position, Vector3 direction, float speed, int count, Action<HitInfo> callback, params GameObject[] ignoreCollision) {
+			System.Random rando = new();
+
+			Projectile[] bullets = new Projectile[count];
 
 			float angle = Mathf.Atan2(direction.y, direction.x);
 			angle *= Mathf.Rad2Deg;
 			float angleDiff = 360 * (1f - Accuracy);
-			float newAngle = (angle - (angleDiff / 2)) + (angleDiff * ((float)GameManager.RandomGenerator.Next(0, 100) / 100f));
 
-			direction = new Vector2(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad));
+			for (int i = 0; i < count; i++) {
+				float newAngle = angle - (angleDiff / 2) + (angleDiff / SplitCount * i);
+				newAngle *= Mathf.Deg2Rad;
 
-			FireProjectile(direction, newAngle, Damage, 5f, transform.position, spreadChain);
-
-			_currentAmmo -= AmmoConsumption;
-			GameManager.UpdateText(GameManager.UI_ActiveGun.CurrentAmmoCounter, CurrentAmmo.ToString());
-			cooldownTick = fireDelay;*/
-		}
-
-		public override void Zoom (InputAction.CallbackContext context) {
-			throw new System.NotImplementedException();
-		}
-
-		public override void Reload (InputAction.CallbackContext context) {
-			throw new System.NotImplementedException();
-		}
-
-		/*protected virtual void ProjectileHit (Entity e, FlameBullet b) {
-			if (b.SpreadChain <= 0) return;
-
-			Vector2 direction = b.Direction;
-
-			float angle = Mathf.Atan2(direction.y, direction.x);
-			angle *= Mathf.Rad2Deg;
-			float angleDiff = 360 * (1f - Accuracy - 0.15f);
-
-			for (int i = 0; i < SplitCount; i++) {
-				float newAngle = (angle - (angleDiff / 2)) + ((angleDiff / SplitCount) * i);
-
-				Vector2 newDirection = new Vector2(Mathf.Cos(newAngle * Mathf.Deg2Rad), Mathf.Sin(newAngle * Mathf.Deg2Rad));
-
-				FireProjectile(newDirection, newAngle, Damage, 5f, b.transform.position, b.SpreadChain - 1, e.gameObject);
+				Vector3 bulletDir = new Vector3(Mathf.Cos(newAngle), 0, Mathf.Sin(newAngle));
+				bullets[i] = FireAtPos(position, bulletDir, speed, callback, ignoreCollision);
 			}
-		}*/
 
-		/*public virtual FlameBullet FireProjectile (Vector2 direction, float angle, int damage, float speed, Vector2 position, int spreadChain, params GameObject[] ignoreCollision) {
-			FlameBullet b = Instantiate(GameManager.Resources.getPrefab("flamebullet"), position, Quaternion.Euler(0, 0, angle)).GetComponent<FlameBullet>();
-			b.Initialize(damage, this, direction, speed, spreadChain, ignoreCollision);
+			return bullets;
+		}
+
+		protected virtual Projectile FireAtPos (Vector3 position, Vector3 direction, float speed, Action<HitInfo> callback, params GameObject[] ignoreCollision) {
+			Projectile b = Instantiate(GameManager.Resources.getPrefab("bullet"), position, Quaternion.Euler(90, Player.Instance.transform.rotation.y, 0)).GetComponent<Projectile>();
+			b.Initialize(direction, speed, callback, ignoreCollision);
 			return b;
-		}*/
+		}
 	}
 }

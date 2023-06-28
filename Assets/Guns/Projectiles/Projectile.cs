@@ -22,7 +22,7 @@ namespace Grav.Guns {
 
 		protected bool initialized;
 
-		protected Action<bool, Entity> callback;
+		protected Action<HitInfo> callback;
 
 		protected virtual void Awake () {
 			RigidBody = GetComponent<Rigidbody>();
@@ -42,16 +42,15 @@ namespace Grav.Guns {
 			if (ignoreCollision.Contains(collision.gameObject)) return;
 
 			if (collision.TryGetComponent(out Entity hit)) {
-				callback(true, hit);
+				callback(new HitInfo { Target = hit, Bullet = this, Result = true});
 				Destroy(gameObject);
 				return;
 			}
 
-			callback(false, null);
-			Destroy(gameObject);
+			callback(new HitInfo { Target = null, Bullet = this, Result = true });
 		}
 
-		public virtual void Initialize (Vector3 _direction, float _speed, Action<bool, Entity> _callback, params GameObject[] _ignoreCollision) {
+		public virtual void Initialize (Vector3 _direction, float _speed, Action<HitInfo> _callback, params GameObject[] _ignoreCollision) {
 			if (initialized) return;
 
 			Direction = _direction;
@@ -60,6 +59,7 @@ namespace Grav.Guns {
 
 			foreach (GameObject collider in _ignoreCollision) {
 				ignoreCollision.Add(collider);
+				IgnoreCollisions(collider);
 			}
 
 			RigidBody.velocity = Direction * Speed;
@@ -67,7 +67,7 @@ namespace Grav.Guns {
 			initialized = true;
 		}
 
-		protected virtual void IgnoreCollisions (Entity target) {
+		protected virtual void IgnoreCollisions (GameObject target) {
 			Physics.IgnoreCollision(GetComponent<Collider>(), target.GetComponent<Collider>(), true);
 		}
 	}

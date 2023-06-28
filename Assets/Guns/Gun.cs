@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using UnityEngine;
-
-using Grav;
 using Grav.Entities;
 using Grav.Items;
 using UnityEngine.InputSystem;
 using Grav.Players;
+using Grav.Events;
 
 namespace Grav.Guns {
 
@@ -18,23 +16,40 @@ namespace Grav.Guns {
 
 		public int Damage;
 
+		//How many bullets per second can be fired from this gun
 		public float FireRate;
 
 		protected float fireDelay;
+		protected float cooldownTimer;
+
+		//This bool determines if the gun is ready to fire or not
+		//This will check if:
+		//The gun is being reloaded
+		//The magazine has ammo in it
+		//The firing cooldown has lapsed
+		protected bool Chambered {
+			get {
+				return !isReloading && CurrentAmmo > 0 && cooldownTimer >= fireDelay;
+			}
+		}
 
 		public float Recoil;
 
 		public float Accuracy;
 
 		public int MagSize;
-
 		public int CurrentAmmo;
 
 		public float ReloadTime;
 		protected bool isReloading;
 
+		protected virtual void Awake () {
+			fireDelay = 1f / FireRate;
+			cooldownTimer = 0f;
+		}
+
 		protected virtual void Update () {
-			//if (cooldownTick > 0) cooldownTick -= Time.deltaTime;
+			if (cooldownTimer < fireDelay) cooldownTimer += Time.deltaTime;
 		}
 
 		public abstract void Trigger (InputAction.CallbackContext context);
@@ -50,15 +65,32 @@ namespace Grav.Guns {
 			else callback(false, null);
 		}
 
-		protected virtual Projectile FireProjectile (Vector3 direction, float speed, Action<bool, Entity> callback, params GameObject[] ignoreCollision) {
-			Projectile b = Instantiate(GameManager.Resources.getPrefab("bullet"), transform.position, Quaternion.Euler(0, Player.Instance.transform.rotation.y, 0)).GetComponent<Projectile>();
+		protected virtual Projectile FireProjectile (Vector3 direction, float speed, Action<HitInfo> callback, params GameObject[] ignoreCollision) {
+			Projectile b = Instantiate(GameManager.Resources.getPrefab("bullet"), transform.position, Quaternion.Euler(90, Player.Instance.transform.rotation.y, 0)).GetComponent<Projectile>();
 			b.Initialize(direction, speed, callback, ignoreCollision);
 			return b;
 		}
 
+		protected virtual void Reload () {
+			if (isReloading) return;
+			else StartCoroutine(ReloadGun());
+		}
+
 		protected virtual IEnumerator ReloadGun () {
 			if (CurrentAmmo == MagSize) yield break;
+
+			AmmoChange _event = EventBus.Post(new AmmoChange(this, MagSize - CurrentAmmo));
+
+			if (_event.Canceled) yield break;
+
+			isReloading = true;
 			yield return new WaitForSeconds(ReloadTime);
+
+			CurrentAmmo = _event.Change;
+			_event.Phase = Phase.Post;
+			isReloading = false;
+
+			EventBus.Post(_event);
 		}
 	}
 }
