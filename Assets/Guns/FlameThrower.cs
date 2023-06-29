@@ -62,8 +62,9 @@ namespace Grav.Guns {
 
 					activeChains.Remove(result.Bullet);
 				}
-
 			}
+
+			Destroy(result.Bullet.gameObject);
 		}
 
 		protected virtual Projectile[] FireSpread (Vector3 position, Vector3 direction, float speed, int count, Action<HitInfo> callback, params GameObject[] ignoreCollision) {
@@ -71,12 +72,11 @@ namespace Grav.Guns {
 
 			Projectile[] bullets = new Projectile[count];
 
-			float angle = Mathf.Atan2(direction.y, direction.x);
-			angle *= Mathf.Rad2Deg;
+			float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
 			float angleDiff = 360 * (1f - Accuracy);
 
 			for (int i = 0; i < count; i++) {
-				float newAngle = angle - (angleDiff / 2) + (angleDiff / SplitCount * i);
+				float newAngle = angle - (angleDiff / 2) + (angleDiff / count * i);
 				newAngle *= Mathf.Deg2Rad;
 
 				Vector3 bulletDir = new Vector3(Mathf.Cos(newAngle), 0, Mathf.Sin(newAngle));
@@ -87,7 +87,7 @@ namespace Grav.Guns {
 		}
 
 		protected virtual Projectile FireAtPos (Vector3 position, Vector3 direction, float speed, Action<HitInfo> callback, params GameObject[] ignoreCollision) {
-			Projectile b = Instantiate(GameManager.Resources.getPrefab("bullet"), position, Quaternion.Euler(90, Player.Instance.transform.rotation.y, 0)).GetComponent<Projectile>();
+			Projectile b = Instantiate(GameManager.Resources.getPrefab("bullet"), position, Quaternion.Euler(Vector3.zero)).GetComponent<Projectile>();
 			b.Initialize(direction, speed, callback, ignoreCollision);
 			return b;
 		}

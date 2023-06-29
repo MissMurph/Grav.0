@@ -1,46 +1,56 @@
-﻿using System.Collections;
+﻿using Grav.Players;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.HID;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace Grav.Guns {
 
 	public class RocketLauncher : Gun {
+		private Projectile activeRocket;
+
 		public override void Trigger (InputAction.CallbackContext context) {
-			/*if (_currentAmmo <= 0) { StartCoroutine(ReloadGun()); return; }
-			if (isReloading || cooldownTick > 0) return;
+			if (context.performed) {
+				if (Chambered && activeRocket == null) {
+					Projectile rocket = FireProjectile(Player.Instance.Direction, 5f, OnHit, Player.Instance.gameObject);
+					activeRocket = rocket;
+					cooldownTimer -= fireDelay;
+				}
+				else if (CurrentAmmo <= 0) {
+					Reload(context);
+				}
+			}
+		}
 
-			ItemParent.AddForce(-direction, Recoil * Damage);
+		protected override void Update () {
+			base.Update();
 
-			float angle = Mathf.Atan2(direction.y, direction.x);
-			angle *= Mathf.Rad2Deg;
-			float angleDiff = 360 * (1f - Accuracy);
-			angle = (angle - (angleDiff / 2)) + (angleDiff * ((float)GameManager.RandomGenerator.Next(0, 100) / 100f));
-			angle *= Mathf.Deg2Rad;
-
-			direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-
-			FireProjectile(direction, angle, Damage, 5f, transform.position);
-
-			_currentAmmo -= AmmoConsumption;
-
-			OnShoot(this);
-			GameManager.UpdateText(GameManager.UI_ActiveGun.CurrentAmmoCounter, CurrentAmmo.ToString());
-			cooldownTick = fireDelay;*/
+			if (activeRocket != null) {
+				Vector3 worldPos = Player.ViewPort.ScreenToWorldPoint(new Vector3(Player.MousePosition.x, Player.MousePosition.y, 15));
+				Vector3 mouseDir = new Vector3(worldPos.x - transform.position.x, 0, worldPos.z - transform.position.z).normalized;
+				activeRocket.Direction = mouseDir;
+			}
 		}
 
 		public override void Zoom (InputAction.CallbackContext context) {
-			throw new System.NotImplementedException();
+			
 		}
 
 		public override void Reload (InputAction.CallbackContext context) {
-			throw new System.NotImplementedException();
+			if (context.performed) {
+				Reload();
+			}
 		}
 
-		/*public virtual new Rocket FireProjectile (Vector2 direction, float angle, int damage, float speed, Vector2 position, params GameObject[] ignoreCollision) {
-			Rocket b = Instantiate(GameManager.Resources.getPrefab("rocket"), position, Quaternion.Euler(0, 0, angle)).GetComponent<Rocket>();
-			b.Initialize(damage, this, direction, speed, ignoreCollision);
-			return b;
-		}*/
+		protected virtual void OnHit (HitInfo hit) {
+			if (hit.Result) {
+				hit.Target.Attack(Damage);
+			}
+
+			activeRocket = null;
+			Destroy(hit.Bullet.gameObject);
+		}
 	}
 }

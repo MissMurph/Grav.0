@@ -72,7 +72,7 @@
                     "name": "Switch",
                     "type": "Value",
                     "id": "d7ba53b5-5610-47ce-9063-851a7e95331b",
-                    "expectedControlType": "Integer",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -279,8 +279,8 @@
                 },
                 {
                     "name": "Hotswap",
-                    "id": "cc6b3c6e-5491-427e-a292-10baacc3712b",
-                    "path": "Hotswap",
+                    "id": "a1aaf4a2-f57a-483e-a488-b00ffc95dc79",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -289,8 +289,8 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "one",
-                    "id": "7b116242-59f5-4a93-b264-b3dd9a28e215",
+                    "name": "up",
+                    "id": "b464f520-ab27-4f5f-ad27-1dc7529a618f",
                     "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
@@ -300,41 +300,8 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "one",
-                    "id": "a7025a46-cca4-4b08-a0b5-7af3f3b97453",
-                    "path": "<Gamepad>/dpad/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Switch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "two",
-                    "id": "6b9d04bb-ed4b-4056-8823-e20187436da8",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Switch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "two",
-                    "id": "13f3c3b1-469c-4f48-a23a-ab83595b3bec",
-                    "path": "<Gamepad>/dpad/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Switch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "three",
-                    "id": "1841c366-ea9d-4b52-9925-d7da1bcf6bd2",
+                    "name": "down",
+                    "id": "6885361d-cf0d-44d6-a4fe-a60fe7715308",
                     "path": "<Keyboard>/3",
                     "interactions": "",
                     "processors": "",
@@ -344,20 +311,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "three",
-                    "id": "6dd78096-1290-4176-8cfd-099d771d2436",
-                    "path": "<Gamepad>/dpad/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Switch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "four",
-                    "id": "2b0ae16a-412e-4636-9de9-d2e52dc554e7",
-                    "path": "<Keyboard>/4",
+                    "name": "left",
+                    "id": "36c6fcda-3598-46ea-a260-4f4ffd2fbba0",
+                    "path": "<Keyboard>/2",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -366,12 +322,12 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "four",
-                    "id": "73d30aee-9fa6-4d4a-ba53-d2096edb2fb8",
-                    "path": "<Gamepad>/dpad/left",
+                    "name": "right",
+                    "id": "7db5536a-b2fe-4752-bbb7-ae1efc580db0",
+                    "path": "<Keyboard>/4",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Keyboard&Mouse",
                     "action": "Switch",
                     "isComposite": false,
                     "isPartOfComposite": true

@@ -23,6 +23,7 @@ namespace Grav.Entities {
 		protected Rigidbody rigidBody;
 
 		public Vector3 Direction { get { return _direction; } }
+		[SerializeField]
 		protected Vector3 _direction;
 
 		public Vector2 Velocity { get { return rigidBody.velocity; } }

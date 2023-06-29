@@ -7,6 +7,7 @@ using Grav.Entities;
 using Grav.Items;
 using Grav.Guns;
 using UnityEngine.InputSystem;
+using System;
 
 namespace Grav.Players {
 
@@ -16,58 +17,39 @@ namespace Grav.Players {
 
 		public float brakeForce = 1f;
 		private bool braking = false;
-
-		//private BoxCollider2D collider;
 		 
+		public static Camera ViewPort {
+			get {
+				return Instance.view;
+			}
+		}
+
 		private Camera view;
 
 		public PassiveItem item;
-		//public Del handler;
 
 		public Gun[] guns;
 		public Gun equipped;
 
-		//public static Vector2 Direction { get { return Instance.direction; } }
-
+		[SerializeField]
 		private Vector2 moveDirection;
-		private Vector2 mousePos;
 
-		//private List<IGunModifier> gunModifiers = new List<IGunModifier>();
+		public static Vector2 MousePosition {
+			get {
+				return Instance.mousePos;
+			}
+		}
+
+		[SerializeField]
+		private Vector2 mousePos;
 
 		protected override void Awake () {
 			base.Awake();
 			if (Instance != null) Destroy(gameObject);
 			else Instance = this;
 
-			//guns = new Gun[4];
-
-			//guns[0] = gameObject.AddComponent<FlameThrower>();
-			//guns[1] = gameObject.AddComponent<RocketLauncher>();
-			//guns[2] = gameObject.AddComponent<ShotGun>();
-			//guns[3] = gameObject.AddComponent<DoubleBarrelShotgun>();
-
-			//foreach (Gun g in guns) {
-				//g.ItemParent = this;
-			//}
-
-			//currentGun = guns[0];
-			//currentGun.UpdateUI();
-
 			view = Camera.main;
-
-			//_direction = new Vector2(0, 0);
-
-			//item = gameObject.AddComponent<AmmoBox>();
-			//item.Initialize(this);
-
-			//AddGunModifier(new DamageMultiplier(0.10f));
-
-
-			//handler += item.DebugMessage;
-			//handler("suck my ass");
 		}
-
-		//public delegate void Del (string message);
 
 		protected override void Update () {
 			base.Update();
@@ -77,12 +59,12 @@ namespace Grav.Players {
 
 			rigidBody.AddForce(new Vector3(x * MoveSpeed, 0, y * MoveSpeed));
 
-			Vector3 worldPos = view.ScreenToWorldPoint(mousePos);
-			Vector3 mouseDir = new Vector3(worldPos.x, 0, worldPos.z) - transform.position;
+			Vector3 worldPos = view.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 15));
+			Vector3 mouseDir = new Vector3(worldPos.x - transform.position.x, 0, worldPos.z - transform.position.z).normalized;
 			_direction = mouseDir;
-			_angle = (Mathf.Atan2(mouseDir.z, mouseDir.x)) * Mathf.Rad2Deg;
+			_angle = Mathf.Atan2(mouseDir.z, -mouseDir.x) * Mathf.Rad2Deg;
 
-			transform.eulerAngles = new Vector3(0, _angle, 0);
+			transform.rotation = Quaternion.Euler(0, _angle, 0);
 		}
 
 		public void Move (InputAction.CallbackContext context) {
@@ -98,7 +80,7 @@ namespace Grav.Players {
 		}
 
 		public void Zoom (InputAction.CallbackContext context) {
-			equipped.Zoom(context);
+			//equipped.Zoom(context);
 		}
 
 		public void Interact (InputAction.CallbackContext context) {
@@ -116,11 +98,13 @@ namespace Grav.Players {
 
 		public void Switch (InputAction.CallbackContext context) {
 			if (context.performed) {
-				int index = context.ReadValue<int>();
+				Vector2 value = context.ReadValue<Vector2>();
+				//int index = context.ReadValue<int>();
 
-				if (guns[index] != null) {
-					equipped = guns[index];
-				}
+				if (value.Equals(Vector2.up)) equipped = guns[0];
+				else if (value.Equals(Vector2.left)) equipped = guns[1];
+				else if (value.Equals(Vector2.down)) equipped = guns[2];
+				else if (value.Equals(Vector2.right)) equipped = guns[3];
 			}
 		}
 	}
